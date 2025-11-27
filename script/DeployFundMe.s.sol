@@ -9,15 +9,21 @@ import {MockV3Aggregator} from "../test/mock/MockV3Aggregator.sol";
 
 contract DeployFundMe is Script {
     function run() external returns (FundMe) {
-        // Get the price feed address for your network
-       HelperConfig helperConfig = new HelperConfig();
-        // address ethUsdPriceFeed = 0x694AA1769357215DE4FAC081bf1f309aDC325306; // Example: Sepolia ETH/USD feed
-        address ethUsdPriceFeed = helperConfig.getOrCreateAnvilEthConfig();
+        // Create HelperConfig instance
+        HelperConfig helperConfig = new HelperConfig();
 
-         // Deploy the FundMe contract
+        // Get the network config struct
+        HelperConfig.NetworkConfig memory networkConfig = helperConfig.getOrCreateAnvilEthConfig();
+
+        // Extract the address from it
+        address ethUsdPriceFeed = networkConfig.priceFeed;
+
+        // Deploy FundMe contract
         vm.startBroadcast();
-         FundMe fundMe = new FundMe(ethUsdPriceFeed);
+        FundMe fundMe = new FundMe(ethUsdPriceFeed);
         vm.stopBroadcast();
+
         return fundMe;
     }
 }
+
